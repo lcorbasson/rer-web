@@ -1,0 +1,329 @@
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'Tauri', sans-serif;
+	font-size: 20px;
+
+	background: #222;
+	color: #eee;
+}
+
+p { margin: 0; padding: 0; }
+
+a { color: #ccc; }
+
+div#heure {
+	position: fixed;
+	top: -50px;
+	right: 10px;
+	width: 3em;
+	padding: 0.2em;
+	padding-top: 50px;
+	font-size: 160%;
+	margin: 0;
+
+	background-color: navy;
+	border-radius: 0.56em;
+	border: white 0.18em solid;
+
+	z-index: 1;
+
+	text-align: center;
+}
+
+@media screen and (max-width: 320px) {
+	div#heure { display: none; }
+}
+
+div.listetrains { 
+	display: table; 
+	width: 100%;
+}
+
+div.train {
+	display: table-row;
+	font-size: 25px;
+	padding: 5px;
+	background-color: #0c5da5;
+}
+
+div.train:nth-child(2n) {
+	background-color: #043a6b;
+}
+
+div.train:nth-child(2n+1) {
+	background-color: #0c5da5;
+}
+
+div.train div {
+	display: table-cell;
+	vertical-align: middle;
+	padding: 3px 6px 3px 3px;
+}
+
+div.train div.col1, div.train div.col2 { text-align: center; }
+div.train div.col1 { width: 4.5em; }
+div.train div.col2 { width: 3.5em; font-size: 150%; line-height: 0.9; }
+div.train span.retard-train { display: none; }
+	
+
+div.train div.col3 {
+	font-size: 40px;
+	letter-spacing: 0.5px;
+}
+
+div.train div.col3 img {
+	position: relative;
+	top: 0.1em;
+	height: 1em;
+}
+
+div.train div.col4 {
+	width: 2em;
+}
+
+span.voie {
+	display: inline-block;
+	text-align: center;
+
+	width: 1.2em;
+	border: 3px solid #ccc;
+	border-radius: 3px;
+	font-size: 155%;
+
+	padding-right: 2px;
+
+	letter-spacing: -2px;
+}
+
+div.train div.col3 div.desserte {
+	display: block;
+	padding: 0;
+
+	font-size: 75%;
+	letter-spacing: 0px;
+	color: #679fd2;
+
+	height: 1.3em;
+	line-height: 1.5em;
+	overflow: hidden;
+
+	word-wrap: break-word;
+}
+
+div.train div.col3 div.desserte p {
+	position: relative;
+	bottom: 0.1em;
+
+	transition-property: bottom;
+	transition-duration: 0.9s;
+	transition-timing-function: linear;
+	-webkit-transition-property: bottom;
+	-webkit-transition-duration: 0.9s;
+	-webkit-transition-timing-function: linear;
+}
+
+div.train div.col2.approche { text-decoration: blink; line-height: 0.9; font-size: 100% }
+div.train div.col2.texte { font-size: 120%; line-height: 0.9 }
+
+div.train.delayed:nth-child(2n)   { background-color: #a05522; }
+div.train.delayed:nth-child(2n+1) { background-color: #b63; }
+div.train.canceled { background-color: #b44; }
+
+div.train.delayed div.col3 div.desserte, 
+	div.train.delayed div.col1 span.numero-train { color: #d9a45a; }
+div.train.canceled div.col3 div.desserte, 
+	div.train.canceled div.col1 span.numero-train { color: #d27272; }
+
+
+span.numero-train { color: #679fd2; }
+
+div#otherstation {
+	padding: 0.9em 0.7em 1.2em;
+	font-size: 12px;
+	display: block;
+}
+
+input#s2 {
+	font-family: 'Tauri', sans-serif;
+	width: 22em;
+	color: white;
+	border: solid #777 1px;
+	background-color: #333;
+	padding: 0.2em 0.1em;
+	margin-left: 0.2em;
+}
+
+::input-placeholder {
+	font-style: italic;
+	color: #666;
+}
+
+input:-moz-placeholder {
+	font-style: italic;
+	color: #666;
+}
+
+input::-moz-placeholder {
+	font-style: italic;
+	color: #666;
+}
+
+input:-ms-input-placeholder {
+	font-style: italic;
+	color: #666;
+}
+
+input::-webkit-input-placeholder {
+	font-style: italic;
+	color: #666;
+}
+
+div#autocomp {
+	position: absolute;
+
+	font-family: sans-serif;
+	background-color: white;
+	border: 1px solid black;
+	color: black;
+	padding: 0.2em;
+
+	z-index: 2;
+}
+div#autocomp ul, div#line_filter ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+div#autocomp ul {
+	display: table;
+}
+div#autocomp ul li {
+	padding: 0;
+	display: table-row;
+}
+div#autocomp ul li.autocompItemHilight {
+	background-color: #ccc;
+	min-width: 12em;
+	cursor: pointer;
+}
+div#autocomp ul li span.name, div#autocomp ul li span.trig { display: table-cell; padding: 0.2em; height: 1.4em }
+div#autocomp ul li span.name { padding-right: 1em; }
+div#autocomp ul li span.name span.lines { text-align: right; }
+div#autocomp ul li span.trig { font-family: monospace; font-style: italic; color: #666; }
+div#autocomp img, div#line_filter img { position: relative; top: 0.2em; padding-left: 0.2em; max-height: 1.4em; }
+
+div#line_filter ul li { text-decoration: underline; display: inline; cursor: pointer; } 
+div#line_filter ul li img.selected { opacity: 1; } 
+div#line_filter ul li.selected { font-weight: bold; } 
+div#line_filter img { opacity: 0.6; }
+div#line_filter { display: inline-block; }
+div#line_filter ul:before { content: "Montrer lignes : "; }
+
+div#error {
+	position: fixed;
+	top: 0;
+	padding: 0.4em;
+	background-color: #b40404;
+	width: 100%;
+	text-align: center;
+	color: white;
+	font-size: 14px;
+/*	display: none; */
+}
+
+div#disclaimer {
+	text-align: center;
+	font-size: 12px;
+}
+
+
+div#listemessages {
+    max-height: 6em;
+    overflow: hidden;
+    font-size: 140%;
+}
+
+div#conteneurmessages {
+    position: relative;
+    bottom: 0px;
+
+	transition-timing-function: linear;
+	-webkit-transition-timing-function: linear;
+}
+
+div.message {
+    background: #d09955;
+    color: black;
+    height: 5em;
+    max-height: 5em;
+    overflow: hidden;
+    padding: 0.5em 0.5em 0.5em 3em;
+}
+
+
+
+
+
+div.subwindow {
+	border-top: 1px solid gray;
+	padding-top: 1em;
+	padding-bottom: 2em;
+	width: 100%;
+
+	font-size: 12px;
+
+	background-color: rgba(34, 34, 34, 0.8);
+	z-index: 1;
+}
+
+@media screen and (min-height: 800px) {
+	div.subwindow { 
+		position: fixed;
+		bottom: 2.5em;
+	}
+
+	div#footer {
+		position: fixed;
+		bottom: 1em;
+	}
+}
+
+div.subwindow p {
+	text-align: center;
+}
+
+div.subwindow div.content {
+	transition-property: height;
+	transition-duration: 0.9s;
+	transition-timing-function: linear;
+	-webkit-transition-property: height;
+	-webkit-transition-duration: 0.9s;
+	-webkit-transition-timing-function: linear;
+}
+	
+
+
+div#footer {
+	border-top: 1px solid gray;
+	padding-top: 1em;
+
+	width: 100%;
+	z-index: 1;
+	background-color: #222;
+
+	font-size: 12px;
+	text-align: center;
+}
+
+select {
+	background-color: #444;
+	border-color: #666;
+	border-radius: 3px;
+	color: white;
+}
+
+select option {
+	background-color: #444;
+	color: white;
+}
