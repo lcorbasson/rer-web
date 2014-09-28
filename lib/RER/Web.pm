@@ -139,49 +139,10 @@ sub cache_get_hash {
 
 
 
+sub fetch_data {
+    my ($code, $line) = @_;
 
-hook 'before' => sub {
-    $RER::Gares::config{dsn} = config->{'db_dsn'};
-    $RER::Gares::config{username} = config->{'db_username'};
-    $RER::Gares::config{password} = config->{'db_password'};
-    RER::Gares::db_connect();
-};
-
-get '/' => sub {
-    # rediriger (302) vers l'url /?s=<blah> si l'user a sauvegardé sa dernière gare
-    if (cookie("station") && ! defined params->{'s'})
-    {
-        redirect "?s=" . cookie("station");
-    }
-
-    # sinon, examiner le header http
-    my $origin_code = check_code(params->{'s'});
-    $origin_code ||= 'EVC';
-
-    my $origin_station = RER::Gares::find(code => $origin_code)->name;
-    utf8::decode($origin_station);
-
-    # positionner le cookie (valable 4 semaines)
-    # on y touche dans le code js, donc http_only = 0
-    cookie "station" => check_code($origin_code), 
-        expires => '4w', 
-        http_only => 0;
-
-    template 'rer', {
-    	origin_station => $origin_station,
-        origin_code => $origin_code,
-        dmaj     => RER::Gares::get_last_update(),
-        stations => RER::Gares::get_stations(),
-    };
-};
-
-get '/json' => sub {
-    header 'Cache-Control' => 'no-cache';
-
-    set serializer => 'JSON';
-
-    my $code = check_code(params->{'s'}) || 'EVC';
-    my $line = params->{'l'};
+    $code = check_code($code) || 'EVC';
 
     my $ds  = RER::DataSource::Transilien->new(
         url         => config->{'sncf_url'},
@@ -239,7 +200,65 @@ get '/json' => sub {
     }
     
     return $ret;
+}
+
+
+hook 'before' => sub {
+    $RER::Gares::config{dsn} = config->{'db_dsn'};
+    $RER::Gares::config{username} = config->{'db_username'};
+    $RER::Gares::config{password} = config->{'db_password'};
+    RER::Gares::db_connect();
 };
+
+get '/' => sub {
+    # rediriger (302) vers l'url /?s=<blah> si l'user a sauvegardé sa dernière gare
+    if (cookie("station") && ! defined params->{'s'})
+    {
+        redirect "?s=" . cookie("station");
+    }
+
+    # sinon, examiner le header http
+    my $origin_code = check_code(params->{'s'});
+    $origin_code ||= 'EVC';
+
+    my $origin_station = RER::Gares::find(code => $origin_code)->name;
+    utf8::decode($origin_station);
+
+    # positionner le cookie (valable 4 semaines)
+    # on y touche dans le code js, donc http_only = 0
+    cookie "station" => check_code($origin_code), 
+        expires => '4w', 
+        http_only => 0;
+
+    template 'rer', {
+    	origin_station => $origin_station,
+        origin_code => $origin_code,
+        dmaj     => RER::Gares::get_last_update(),
+        stations => RER::Gares::get_stations(),
+    };
+};
+
+get '/json' => sub {
+    header 'Cache-Control' => 'no-cache';
+
+    set serializer => 'JSON';
+
+    return fetch_data(params->{'s'}, params->{'l'});
+};
+
+
+
+get '/cisco/:s/:l' => sub {
+    header 'Cache-Control' => 'no-cache';
+
+    my $line = params->{'l'};
+    undef $line if $line eq 'all';
+
+    my $ret = fetch_data(params->{'s'}, $line);
+    template 'cisco', { data => $ret };
+};
+
+
 
 get '/autocomp' => sub {
     header 'Cache-Control' => 'no-cache';
